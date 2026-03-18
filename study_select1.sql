@@ -232,3 +232,114 @@ FROM ONLINE_SALE
 GROUP BY USER_ID, PRODUCT_ID
 HAVING COUNT(*) >= 2
 ORDER BY USER_ID ASC, PRODUCT_ID DESC;
+
+
+-- 문제 6.
+
+-- 다음은 아이스크림 가게의 상반기 주문 정보를 담은 FIRST_HALF 테이블과 아이스크림 성분에 대한 정보를 담은 ICECREAM_INFO 테이블입니다. FIRST_HALF 테이블 구조는 다음과 같으며, SHIPMENT_ID, FLAVOR, TOTAL_ORDER 는 각각 아이스크림 공장에서 아이스크림 가게까지의 출하 번호, 아이스크림 맛, 상반기 아이스크림 총주문량을 나타냅니다. FIRST_HALF 테이블의 기본 키는 FLAVOR입니다.
+
+-- NAME	TYPE	NULLABLE
+-- SHIPMENT_ID	INT(N)	FALSE
+-- FLAVOR	VARCHAR(N)	FALSE
+-- TOTAL_ORDER	INT(N)	FALSE
+-- ICECREAM_INFO 테이블 구조는 다음과 같으며, FLAVOR, INGREDITENT_TYPE 은 각각 아이스크림 맛, 아이스크림의 성분 타입을 나타냅니다. INGREDIENT_TYPE에는 아이스크림의 주 성분이 설탕이면 sugar_based라고 입력되고, 아이스크림의 주 성분이 과일이면 fruit_based라고 입력됩니다. ICECREAM_INFO의 기본 키는 FLAVOR입니다. ICECREAM_INFO테이블의 FLAVOR는 FIRST_HALF 테이블의 FLAVOR의 외래 키입니다.
+
+-- NAME	TYPE	NULLABLE
+-- FLAVOR	VARCHAR(N)	FALSE
+-- INGREDIENT_TYPE	VARCHAR(N)	FALSE
+-- 문제
+-- 상반기 아이스크림 총주문량이 3,000보다 높으면서 아이스크림의 주 성분이 과일인 아이스크림의 맛을 총주문량이 큰 순서대로 조회하는 SQL 문을 작성해주세요.
+
+-- 예시
+-- 예를 들어 FIRST_HALF 테이블이 다음과 같고
+
+-- SHIPMENT_ID	FLAVOR	TOTAL_ORDER
+-- 101	chocolate	3200
+-- 102	vanilla	2800
+-- 103	mint_chocolate	1700
+-- 104	caramel	2600
+-- 105	white_chocolate	3100
+-- 106	peach	2450
+-- 107	watermelon	2150
+-- 108	mango	2900
+-- 109	strawberry	3100
+-- 110	melon	3150
+-- 111	orange	2900
+-- 112	pineapple	2900
+-- ICECREAM_INFO 테이블이 다음과 같다면
+
+-- FLAVOR	INGREDIENT_TYPE
+-- chocolate	sugar_based
+-- vanilla	sugar_based
+-- mint_chocolate	sugar_based
+-- caramel	sugar_based
+-- white_chocolate	sugar_based
+-- peach	fruit_based
+-- watermelon	fruit_based
+-- mango	fruit_based
+-- strawberry	fruit_based
+-- melon	fruit_based
+-- orange	fruit_based
+-- pineapple	fruit_based
+-- 상반기 아이스크림 총주문량이 3,000보다 높은 아이스크림 맛은 chocolate, strawberry, melon, white_chocolate입니다. 이 중에 아이스크림의 주 성분이 과일인 아이스크림 맛은 strawberry와 melon이고 총주문량이 큰 순서대로 아이스크림 맛을 조회하면 melon, strawberry 순으로 조회되어야 합니다. 따라서 SQL 문을 실행하면 다음과 같이 나와야 합니다.
+
+-- FLAVOR
+-- melon
+-- strawberry
+
+-- 답:
+
+SELECT F.FLAVOR
+FROM FIRST_HALF F
+JOIN ICECREAM_INFO I ON F.FLAVOR = I.FLAVOR
+WHERE F.TOTAL_ORDER > 3000
+  AND I.INGREDIENT_TYPE = 'fruit_based'
+ORDER BY F.TOTAL_ORDER DESC;
+
+
+-- 문제 7.
+
+-- 다음은 종합병원에 속한 의사 정보를 담은DOCTOR 테이블입니다. DOCTOR 테이블은 다음과 같으며 DR_NAME, DR_ID, LCNS_NO, HIRE_YMD, MCDP_CD, TLNO는 각각 의사이름, 의사ID, 면허번호, 고용일자, 진료과코드, 전화번호를 나타냅니다.
+
+-- Column name	Type	Nullable
+-- DR_NAME	VARCHAR(20)	FALSE
+-- DR_ID	VARCHAR(10)	FALSE
+-- LCNS_NO	VARCHAR(30)	FALSE
+-- HIRE_YMD	DATE	FALSE
+-- MCDP_CD	VARCHAR(6)	TRUE
+-- TLNO	VARCHAR(50)	TRUE
+-- 문제
+-- DOCTOR 테이블에서 진료과가 흉부외과(CS)이거나 일반외과(GS)인 의사의 이름, 의사ID, 진료과, 고용일자를 조회하는 SQL문을 작성해주세요. 이때 결과는 고용일자를 기준으로 내림차순 정렬하고, 고용일자가 같다면 이름을 기준으로 오름차순 정렬해주세요.
+
+-- 예시
+-- DOCTOR 테이블이 다음과 같을 때
+
+-- DR_NAME	DR_ID	LCNS_NO	HIRE_YMD	MCDP_CD	TLNO
+-- 루피	DR20090029	LC00010001	2009-03-01	CS	01085482011
+-- 패티	DR20090001	LC00010901	2009-07-01	CS	01085220122
+-- 뽀로로	DR20170123	LC00091201	2017-03-01	GS	01034969210
+-- 티거	DR20100011	LC00011201	2010-03-01	NP	01034229818
+-- 품바	DR20090231	LC00011302	2015-11-01	OS	01049840278
+-- 티몬	DR20090112	LC00011162	2010-03-01	FM	01094622190
+-- 니모	DR20200012	LC00911162	2020-03-01	CS	01089483921
+-- 오로라	DR20100031	LC00010327	2010-11-01	OS	01098428957
+-- 자스민	DR20100032	LC00010192	2010-03-01	GS	01023981922
+-- 벨	DR20100039	LC00010562	2010-07-01	GS	01058390758
+-- SQL을 실행하면 다음과 같이 출력되어야 합니다.
+
+-- DR_NAME	DR_ID	MCDP_CD	HIRE_YMD
+-- 니모	DR20200012	CS	2020-03-01
+-- 뽀로로	DR20170123	GS	2017-03-01
+-- 벨	DR20100039	GS	2010-07-01
+-- 자스민	DR20100032	GS	2010-03-01
+-- 패티	DR20090001	CS	2009-07-01
+-- 루피	DR20090029	CS	2009-03-01
+-- 주의사항
+-- 날짜 포맷은 예시와 동일하게 나와야합니다.
+
+-- 답:
+
+SELECT DR_NAME, DR_ID, MCDP_CD, DATE_FORMAT(HIRE_YMD, '%Y-%m-%d') AS HIRE_YMD
+FROM DOCTOR
+WHERE MCDP_CD IN ('CS', 'GS')
+ORDER BY HIRE_YMD DESC, DR_NAME ASC;
