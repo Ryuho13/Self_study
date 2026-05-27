@@ -162,3 +162,175 @@ class Solution {
         return answer - 1;
     }
 }
+
+// 문제 4:
+
+// 문제 설명
+// 1이상의 정수로 이루어진 길이가 N인 1차원 정수 배열 arr가 주어집니다. 다음 규칙에 따라 배열 brr를 만듭니다.
+
+// 배열 arr의 인덱스 순서대로 arr[i]를 배열 brr에 연속으로 arr[i]개씩 추가합니다.
+// 예를 들어, arr가 [2, 1, 5]이면 brr는 [2, 2, 1, 5, 5, 5, 5, 5]입니다.
+
+// brr의 부분 배열1 구간의 양 끝을 나타내는 l, r이 주어질 때 아래 2가지를 구하려고 합니다.
+
+// K = brr의 l번째 원소부터 r번째 원소까지의 합 = brr[l-1] + brr[l] + brr[l+1] + ... + brr[r-2] + brr[r-1]
+// C = 길이가 r - l + 1인 brr의 부분 배열 중 합이 K인 부분 배열의 개수
+// 1차원 정수 배열 arr와 구간의 양 끝을 나타내는 정수 l, r이 매개변수로 주어집니다. 이때, 1차원 정수 배열 [K, C]를 return 하도록 solution 함수를 완성해 주세요.
+
+// 제한사항
+// 1 ≤ arr의 길이 = N ≤ 100,000
+// 1 ≤ arr[i] ≤ 100,000
+// brr의 모든 원소의 합 ≤ 1015
+// 1 ≤ l ≤ r ≤ arr의 모든 원소의 합
+// l번째 원소부터 r번째 원소까지의 합을 구해야 합니다.
+// 테스트 케이스 구성 안내
+// 아래는 테스트 케이스 구성을 나타냅니다. 각 그룹은 하나 이상의 하위 그룹으로 이루어져 있으며, 하위 그룹의 모든 테스트 케이스를 통과하면 해당 그룹에 할당된 점수를 획득할 수 있습니다.
+
+// 그룹	총점	테스트 케이스 그룹 설명
+// #1	5%	l = r
+// #2	15%	N ≤ 100, arr[i] ≤ 10
+// #3	35%	정답이 C = 1인 테스트 케이스만 주어집니다.
+// #4	45%	추가 제한 사항 없음
+// 입출력 예
+// arr	l	r	result
+// [3, 2, 3, 1, 1]	5	7	[8, 2]
+// [2, 2, 2]	2	2	[2, 6]
+// [8, 8, 6, 5, 2, 9, 8, 4, 3, 10]	25	27	[15, 3]
+// [70195, 25471, 7389, 58187, 18454, 90532, 97667, 17148, 91636, 2810]	126058	462933	[27554327568, 1]
+// [16952, 70276, 16771, 37992, 87549, 54906, 36718, 20478, 57088, 27916, 51509, 83422, 51707, 18807, 80859, 2673, 37734, 93380]	149845	228204	[6860339640, 9190]
+// [49134, 86806, 94548, 88849, 95022, 28334, 16637, 79487, 23773, 7314, 47370, 50269, 36573, 9415, 44674, 28096]	61242	88535	[2369282964, 59513]
+// 입출력 예 설명
+// 입출력 예 #1
+
+// brr는 [3, 3, 3, 2, 2, 3, 3, 3, 1, 1]입니다. 5~7번째 원소로 이루어진 부분 배열의 합은 8(=K)입니다.
+// [3, 3, 3, 2, 2, 3, 3, 3, 1, 1] 또한 부분 배열의 합이 8이며 길이가 3입니다.
+// 위 두 경우 외에는 합이 8이고 길이가 3인 부분 배열은 존재하지 않습니다.
+// [3, 3, 3, 2, 2, 3, 3, 3, 1, 1]은 부분 배열의 합이 8이지만 길이가 4이므로 C로 세지 않습니다.
+
+// 따라서 [8, 2]를 return 해야 합니다.
+
+// 입출력 예 #2
+
+// brr는 [2, 2, 2, 2, 2, 2]입니다. 2~2번째 원소로 이루어진 부분 배열의 합은 2(=K)입니다. 합이 2이고 길이가 1인 부분 배열의 개수는 6개입니다.
+
+// 따라서 [2, 6]을 return 해야 합니다.
+
+// 입출력 예 #3
+
+// [15, 3]을 return 해야 합니다.
+
+// 입출력 예 #4
+
+// [27554327568, 1]을 return 해야 합니다.
+
+// 입출력 예 #5
+
+// [6860339640, 9190]을 return 해야 합니다.
+
+// 입출력 예 #6
+
+// [2369282964, 59513]을 return 해야 합니다.
+
+// 부분 배열이란 주어진 배열에서 연속된 원소들로 이루어진 배열을 의미합니다. ↩
+
+// 답 :
+// brr의 크기가 최대 10^10이라 실제 배열 생성 불가.
+// arr[i]가 arr[i]번 반복되는 블록 구조를 이용해 이진탐색으로 K를 구하고,
+// 슬라이딩 윈도우의 좌/우 끝이 블록 경계를 넘는 이벤트 지점만 처리해 C를 계산.
+// 이벤트 사이 구간에서 윈도우 합은 등차수열 → 구간 내 K와 같은 위치를 O(1)로 카운트.
+
+import java.util.*;
+
+class Solution {
+    private int[] arr;
+    private long[] cumLen;        // cumLen[i] = arr[0]+...+arr[i-1]
+    private long[] blockPrefSum;  // blockPrefSum[i] = arr[0]^2+...+arr[i-1]^2
+
+    public long[] solution(int[] arr, long l, long r) {
+        int N = arr.length;
+        this.arr = arr;
+        cumLen = new long[N + 1];
+        blockPrefSum = new long[N + 1];
+        for (int i = 0; i < N; i++) {
+            cumLen[i + 1] = cumLen[i] + arr[i];
+            blockPrefSum[i + 1] = blockPrefSum[i] + (long) arr[i] * arr[i];
+        }
+        long total = cumLen[N];
+        long len = r - l + 1;
+
+        long K = rangeSum(l, r);
+        long C = countWindows(N, total, len, K);
+        return new long[]{K, C};
+    }
+
+    // brr에서 위치 p(1-indexed)가 속한 블록 인덱스 반환
+    private int blockOf(long p) {
+        int lo = 0, hi = arr.length - 1;
+        while (lo < hi) {
+            int mid = (lo + hi) / 2;
+            if (cumLen[mid + 1] < p) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    private int getVal(long p) {
+        return arr[blockOf(p)];
+    }
+
+    // brr[1..p]의 합 (1-indexed 누적합)
+    private long prefixSum(long p) {
+        if (p <= 0) return 0;
+        int b = blockOf(p);
+        return blockPrefSum[b] + (long) arr[b] * (p - cumLen[b]);
+    }
+
+    private long rangeSum(long l, long r) {
+        return prefixSum(r) - prefixSum(l - 1);
+    }
+
+    // 길이 len인 윈도우 중 합이 K인 경우의 수
+    private long countWindows(int N, long total, long len, long K) {
+        if (total < len) return 0;
+
+        // 이벤트: 좌끝/우끝이 블록 경계를 넘는 윈도우 시작 위치
+        TreeSet<Long> eventSet = new TreeSet<>();
+        eventSet.add(1L);
+        eventSet.add(total - len + 2); // sentinel
+
+        for (int i = 1; i < N; i++) {
+            long leftEvent = cumLen[i] + 1;          // 좌끝이 블록 i로 진입
+            if (leftEvent <= total - len + 1) eventSet.add(leftEvent);
+
+            long rightEvent = cumLen[i] + 1 - len;   // 우끝(p+len)이 블록 i로 진입
+            if (rightEvent >= 1 && rightEvent <= total - len + 1) eventSet.add(rightEvent);
+        }
+
+        long[] events = eventSet.stream().mapToLong(Long::longValue).toArray();
+        long currentSum = rangeSum(1, len);
+        long C = 0;
+
+        for (int i = 0; i < events.length - 1; i++) {
+            long pStart = events[i];
+            long pEnd   = events[i + 1];
+            long segLen = pEnd - pStart;
+
+            // 한 스텝 이동 시 합의 변화량: brr[p+len] - brr[p] (구간 내 상수)
+            long delta = (pStart + len <= total)
+                    ? getVal(pStart + len) - getVal(pStart)
+                    : 0;
+
+            long diff = K - currentSum;
+            if (delta == 0) {
+                if (diff == 0) C += segLen;
+            } else {
+                if (diff % delta == 0) {
+                    long offset = diff / delta;
+                    if (offset >= 0 && offset < segLen) C++;
+                }
+            }
+            currentSum += segLen * delta;
+        }
+        return C;
+    }
+}
